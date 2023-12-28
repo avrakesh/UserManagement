@@ -1,15 +1,13 @@
 package com.cit.usermanagement.controller;
 
-import com.cit.usermanagement.entity.Role;
+import com.cit.usermanagement.entity.*;
 import com.cit.usermanagement.exception.ApplicationException;
 import com.cit.usermanagement.jwtService.JwtService;
+import com.cit.usermanagement.repository.AssignedGroupDao;
 import com.cit.usermanagement.repository.RoleDao;
 import com.cit.usermanagement.repository.UserProfileDao;
 import com.cit.usermanagement.service.UserProfileService;
 import com.cit.usermanagement.dto.UserProfile;
-import com.cit.usermanagement.entity.GroupRole;
-import com.cit.usermanagement.entity.LoginRequest;
-import com.cit.usermanagement.entity.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +38,8 @@ public class UserProfileController {
     @Autowired
     RoleDao roleDao;
 
+    @Autowired
+    AssignedGroupDao assignedGroupDao;
 
     @Autowired
     private JwtService jwtService;
@@ -82,16 +82,22 @@ public class UserProfileController {
 
             return userProfileService.addUser(userProfile);
     }
-    
-    @PostMapping("/upload/{userId}")
+
+    @PostMapping("/uploadProfilePicture/{userId}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<String> uploadPersonalPhoto(@RequestParam("file") MultipartFile file, @PathVariable Long userId) throws ApplicationException{
-		try {
-			return userProfileService.uploadImage(userId, file.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new ApplicationException("input file is not valid",e);
-		}
+        try {
+            return userProfileService.uploadImage(userId, file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ApplicationException("input file is not valid",e);
+        }
+    }
+
+    @DeleteMapping("/deleteProfilePicture/{userId}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<String> deletePersonalPhoto(@PathVariable Long userId) throws ApplicationException{
+        return userProfileService.deleteImage(userId);
     }
     
 
@@ -109,7 +115,7 @@ public class UserProfileController {
         return userProfileService.modifyUser(userId, userProfile);
     }
 
-    @PutMapping("/addUserToGroupWithRole/{userId}/{groupId}/{roleId}")
+/*    @PutMapping("/addUserToGroupWithRole/{userId}/{groupId}/{roleId}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<String> adUserToGroupWithRole(@PathVariable Long userId, @PathVariable String groupId, @PathVariable String roleId) throws ApplicationException{
 
@@ -121,7 +127,7 @@ public class UserProfileController {
     public ResponseEntity<String> deleteUserFromGroup(@PathVariable Long userId, @PathVariable String groupId) throws ApplicationException{
 
         return userProfileService.deleteUserFromGroupWithRole(userId, groupId);
-    }
+    }*/
 
     @DeleteMapping("/deleteUser/{userId}")
     @CrossOrigin(origins = "*")
@@ -157,23 +163,23 @@ public class UserProfileController {
 
                loginResponse.setRoles(roles);
 
-//               List<String> assignedGroupIds = new ArrayList<>();
-//               List<String> roleCodes = new ArrayList<>();
-//               for(UserGroupRole userGroupRole : userGroupRoles){
-//
-//                   assignedGroupIds.add(userGroupRole.getAssignedGroup());
-//                   Optional<Role> role = roleDao.findById(userGroupRole.getRole().getRoleId());
-//                   roleCodes.add(role.get().getRoleCode());
-//               }
-//
-//               loginResponse.setRoleCode(roleCodes);
-//               loginResponse.setDeniedAccessMethodNames(role.get().getDeniedAccessMethodNames());
-//               loginResponse.setAllowedAccessMethodNames(role.get().getAllowedAccessMethodNames());
-//
-//               Optional<UserProfile> optionalUserProfile = userProfileDao.findByUsername(loginRequest.getUsername());
-//               loginResponse.setUserId(optionalUserProfile.get().getUserId());
-//
-//               loginResponse.setAssignedGroupId(assignedGroupIds);
+                List<Group> groups = new ArrayList<>();
+
+
+                if (userProfile.get().getGroupRoles() != null) {
+
+                    for (GroupRole groupRole : userProfile.get().getGroupRoles()) {
+                        if (groupRole.getAssignedGroupId() != null) {
+                            Group group = new Group();
+                            group.setGroupId(groupRole.getAssignedGroupId());
+                            Optional<AssignedGroups> assignedGroup = assignedGroupDao.findByGroupId(groupRole.getAssignedGroupId());
+                            group.setGroupName(assignedGroup.get().getGroupName());
+                            groups.add(group);
+                        }
+                    }
+                }
+                loginResponse.setGroups(groups);
+
 
                return new ResponseEntity<>(loginResponse, HttpStatus.OK);
 

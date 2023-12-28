@@ -116,6 +116,14 @@ public class UserProfileService {
     	userProfileDao.save(userProf);
 		return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    public ResponseEntity<String> deleteImage(Long userId) {
+        Optional<com.cit.usermanagement.entity.UserProfile> user = userProfileDao.findById(userId);
+        com.cit.usermanagement.entity.UserProfile userProf = user.get();
+        userProf.setImage(new byte[0]);
+        userProfileDao.save(userProf);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     
     public ResponseEntity<UserProfile> getUserById(Long userId) {
         log.info("Entered the getUserById method.");
@@ -157,12 +165,12 @@ public class UserProfileService {
 
             //creating a new record in userProfile table
             LocalDateTime createdDate = LocalDateTime.parse(userProfile.getCreatedOn(), df);
-            LocalDateTime updatedDate = LocalDateTime.parse(userProfile.getUpdatedOn(), df);
+           // LocalDateTime updatedDate = LocalDateTime.parse(userProfile.getUpdatedOn(), df);
             BsonTimestamp dtimes = new BsonTimestamp(createdDate.toInstant(ZoneOffset.UTC).toEpochMilli());
-            BsonTimestamp rtimes = new BsonTimestamp(updatedDate.toInstant(ZoneOffset.UTC).toEpochMilli());
+            //BsonTimestamp rtimes = new BsonTimestamp(updatedDate.toInstant(ZoneOffset.UTC).toEpochMilli());
             BeanUtils.copyProperties(userProfile, modelUserProfile);
             modelUserProfile.setCreatedOn(dtimes);
-            modelUserProfile.setUpdatedOn(rtimes);
+            //modelUserProfile.setUpdatedOn(rtimes);
             modelUserProfile.setPassword(encoder.encode(userProfile.getPassword()));
             modelUserProfile.setToken(TokenGenerator.generateToken());
             userProfileDao.save(modelUserProfile);
@@ -230,18 +238,31 @@ public class UserProfileService {
             LocalDateTime updatedDate = LocalDateTime.parse(LocalDateTime.now().format(df), df);
             BsonTimestamp rtimes = new BsonTimestamp(updatedDate.toInstant(ZoneOffset.UTC).toEpochMilli());
 
-            userProfileFromDb.setUsername(viewUserProfile.getUsername());
-            userProfileFromDb.setPassword(encoder.encode(viewUserProfile.getPassword()));
-            userProfileFromDb.setCompany(viewUserProfile.getCompany());
-
-            //userProfileFromDb.setApplicationName(viewUserProfile.getApplicationName());
-            userProfileFromDb.setUpdatedBy(viewUserProfile.getUpdatedBy());
-
-            userProfileFromDb.setIsActive(viewUserProfile.getIsActive());
-
+            if (viewUserProfile.getUsername() !=null) {
+                userProfileFromDb.setUsername(viewUserProfile.getUsername());
+            }
+            if (viewUserProfile.getPassword() !=null) {
+                userProfileFromDb.setPassword(encoder.encode(viewUserProfile.getPassword()));
+            }
+            if (viewUserProfile.getCompany() !=null) {
+                userProfileFromDb.setCompany(viewUserProfile.getCompany());
+            }
+            if (viewUserProfile.getUpdatedBy() !=null) {
+                userProfileFromDb.setUpdatedBy(viewUserProfile.getUpdatedBy());
+            }
+            if (viewUserProfile.getIsActive() !=null) {
+                userProfileFromDb.setIsActive(viewUserProfile.getIsActive());
+            }
+            if (viewUserProfile.getEmailAddress() !=null) {
+                userProfileFromDb.setEmailAddress((viewUserProfile.getEmailAddress()));
+            }
+            if (viewUserProfile.getPhoneNumber() !=null) {
+                userProfileFromDb.setPhoneNumber(viewUserProfile.getPhoneNumber());
+            }
             userProfileFromDb.setUpdatedOn(rtimes);
-
-            userProfileFromDb.setGroupRoles(viewUserProfile.getGroupRoles());
+            if (viewUserProfile.getGroupRoles() !=null) {
+                userProfileFromDb.setGroupRoles(viewUserProfile.getGroupRoles());////////modify
+            }
 
             userProfileDao.save(userProfileFromDb);
             log.info("Closing the modify method successfully.");
@@ -302,68 +323,116 @@ public class UserProfileService {
         }
     }
 
-    public ResponseEntity<String> addUserToGroupWithRole(Long userId, String groupId,String roleId) {
-        log.info("Entered the addUserToGroup method");
+//    public ResponseEntity<String> addUserToGroupWithRoleAndPrivilege(Long userId, GroupRole groupRole) {
+//        log.info("Entered the addUserToGroup method");
+//
+//        try {
+//            Optional<UserProfile> optionalUserProfile = userProfileDao.findById(userId);
+//            UserProfile userProfile = optionalUserProfile.get();
+//
+//            GroupRole groupRoleModel = new GroupRole();
+//            groupRoleModel.setRoleId(groupRole.getRoleId());
+//            groupRoleModel.setAssignedGroupId(groupRole.getAssignedGroupId());
+//            groupRoleModel.setCustomizedPrivileges(groupRole.getCustomizedPrivileges());
+//
+//            List<GroupRole> groupRoleList = userProfile.getGroupRoles();
+//
+//            if (groupRoleList == null) {
+//                groupRoleList = new ArrayList<>();
+//            }
+//            groupRoleList.add(groupRoleModel);
+//
+//            userProfile.setGroupRoles(groupRoleList);
+//
+//            userProfileDao.save(userProfile);
+//            log.info("Closing the modify method successfully.");
+//            return new ResponseEntity<>("User added to group Successfully", HttpStatus.OK);
+//
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//            log.debug(ExceptionUtils.getStackTrace(e));
+//            return new ResponseEntity<>("Failed to add User to group, Null Pointer Exception", HttpStatus.BAD_REQUEST);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.debug(ExceptionUtils.getStackTrace(e));
+//            return new ResponseEntity<>("Failed to add User to group, Exception occurred", HttpStatus.BAD_REQUEST);
+//        }
+//
+//    }
+//
+//    public ResponseEntity<String> deleteUserFromGroupWithRole(Long userId, String groupId) {
+//        log.info("Entered the deleteUserFromGroupWithRole method");
+//
+//        try {
+//            Optional<UserProfile> optionalUserProfile = userProfileDao.findById(userId);
+//            UserProfile userProfile = optionalUserProfile.get();
+//
+//            List<GroupRole> groupRoleList = userProfile.getGroupRoles();
+//
+//            for (GroupRole groupRole : groupRoleList) {
+//                if (groupRole.getAssignedGroupId().equals(groupId)) {
+//                    groupRoleList.remove(groupRole);
+//                }
+//            }
+//            userProfileDao.save(userProfile);
+//            log.info("Closing the deleteUserFromGroupWithRole method successfully.");
+//            return new ResponseEntity<>("User removed from group Successfully", HttpStatus.OK);
+//
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//            log.debug(ExceptionUtils.getStackTrace(e));
+//            return new ResponseEntity<>("Failed to remove User from group, Null Pointer Exception", HttpStatus.BAD_REQUEST);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.debug(ExceptionUtils.getStackTrace(e));
+//            return new ResponseEntity<>("Failed to remove User from group, Exception occurred", HttpStatus.BAD_REQUEST);
+//        }
+//
+//    }
 
-        try {
-       Optional<com.cit.usermanagement.entity.UserProfile> optionalUserProfile = userProfileDao.findById(userId);
-       com.cit.usermanagement.entity.UserProfile userProfile = optionalUserProfile.get();
-
-       GroupRole groupRole = new GroupRole();
-       groupRole.setRoleId(roleId);
-       groupRole.setAssignedGroupId(groupId);
-       List<GroupRole> groupRoleList = userProfile.getGroupRoles();
-
-            if (groupRoleList == null) {
-                groupRoleList = new ArrayList<>();
-            }
-       groupRoleList.add(groupRole);
-
-       userProfile.setGroupRoles(groupRoleList);
-
-       userProfileDao.save(userProfile);
-        log.info("Closing the modify method successfully.");
-        return new ResponseEntity<>("User added to group Successfully", HttpStatus.OK);
-
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            log.debug(ExceptionUtils.getStackTrace(e));
-            return new ResponseEntity<>("Failed to add User to group, Null Pointer Exception", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.debug(ExceptionUtils.getStackTrace(e));
-            return new ResponseEntity<>("Failed to add User to group, Exception occurred", HttpStatus.BAD_REQUEST);
-        }
-
-    }
-
-    public ResponseEntity<String> deleteUserFromGroupWithRole(Long userId, String groupId) {
-        log.info("Entered the deleteUserFromGroupWithRole method");
-
-        try {
-            Optional<com.cit.usermanagement.entity.UserProfile> optionalUserProfile = userProfileDao.findById(userId);
-            com.cit.usermanagement.entity.UserProfile userProfile = optionalUserProfile.get();
-
-            List<GroupRole> groupRoleList = userProfile.getGroupRoles();
-
-            for (GroupRole groupRole : groupRoleList){
-                if (groupRole.getAssignedGroupId().equals(groupId)){
-                    groupRoleList.remove(groupRole);
-                }
-            }
-            userProfileDao.save(userProfile);
-            log.info("Closing the deleteUserFromGroupWithRole method successfully.");
-            return new ResponseEntity<>("User removed from group Successfully", HttpStatus.OK);
-
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            log.debug(ExceptionUtils.getStackTrace(e));
-            return new ResponseEntity<>("Failed to remove User from group, Null Pointer Exception", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.debug(ExceptionUtils.getStackTrace(e));
-            return new ResponseEntity<>("Failed to remove User from group, Exception occurred", HttpStatus.BAD_REQUEST);
-        }
-
-    }
+//    public ResponseEntity<String> addUserPrivilege(Long userId, String userPrivilege) {
+//        try {
+//            Optional<UserProfile> optionalUserProfile = userProfileDao.findById(userId);
+//
+//            UserProfile userProfile = optionalUserProfile.get();
+//
+//            List<String> userPrivilegeList = userProfile.getUserExtraPrivileges();
+//            if(userPrivilegeList == null){
+//                userPrivilegeList = new ArrayList<>();
+//            }
+//            userPrivilegeList.add(userPrivilege);
+//
+//            userProfile.setUserExtraPrivileges(userPrivilegeList);
+//
+//            userProfileDao.save(userProfile);
+//            return new ResponseEntity<>("Modified user privileges", HttpStatus.OK);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>("Failed to modify user privileges", HttpStatus.BAD_REQUEST);
+//        }
+//    }
+//    public ResponseEntity<String> removeUserPrivilege(Long userId, String userPrivilege) {
+//        try {
+//            Optional<UserProfile> optionalUserProfile = userProfileDao.findById(userId);
+//
+//            UserProfile userProfile = optionalUserProfile.get();
+//
+//            System.out.println(userProfile.toString());
+//
+//            List<String> userPrivilegeList = userProfile.getUserExtraPrivileges();
+//            for(String privilege : userPrivilegeList){
+//                if(privilege.equals(userPrivilege)){
+//                    userPrivilegeList.remove(privilege);
+//                }
+//            }
+//
+//            userProfileDao.save(userProfile);
+//            return new ResponseEntity<>("Modified user privileges", HttpStatus.OK);
+//
+//        } catch (Exception e) {
+//            log.debug(ExceptionUtils.getStackTrace(e));
+//            return new ResponseEntity<>("Failed to modify user privileges", HttpStatus.BAD_REQUEST);
+//        }
+//    }
 }

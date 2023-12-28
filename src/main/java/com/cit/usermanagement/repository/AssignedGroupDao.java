@@ -14,5 +14,4 @@ public interface AssignedGroupDao extends MongoRepository<AssignedGroups, String
 
     List<AssignedGroups> findByIsActive(boolean value);
 
-    Optional<AssignedGroups> findByGroupName(String groupName);
 }

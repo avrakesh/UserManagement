@@ -12,7 +12,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-public class AssignedUserGroupController {
+public class AssignedGroupController {
     
     @Autowired
     AssignedUserGroupService assignedUserGroupService;
@@ -20,7 +20,7 @@ public class AssignedUserGroupController {
     
     @PostMapping("/addAssignedGroup")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<String> addAssignedGroup(@RequestBody AssignedGroups userGroup) throws ApplicationException {
+    public ResponseEntity<String> addAssignedGroup(@RequestBody AssignedGroups userGroup) throws ApplicationException{
         System.out.println(userGroup.toString());
         return assignedUserGroupService.addAssignedGroup(userGroup);
     }

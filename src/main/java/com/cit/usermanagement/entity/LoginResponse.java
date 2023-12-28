@@ -9,17 +9,7 @@ public class LoginResponse {
     private String assignedToId;
     private List<GroupRole> groupRoles;
     private List<Role> roles;
-
-
-
-//    private List<String> assignedGroupId;
-//
-//    private List<String> roleCode;
-//
-//    private Set<String> deniedAccessMethodNames;
-//
-//    private Set<String> allowedAccessMethodNames;
-
+    private List<Group> groups;
 
     public String getToken() {
         return token;
@@ -51,5 +41,13 @@ public class LoginResponse {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
     }
 }
