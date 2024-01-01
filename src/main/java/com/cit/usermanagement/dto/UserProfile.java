@@ -172,11 +172,21 @@ public class UserProfile {
 
 	@Override
 	public String toString() {
-		return "UserProfile [userId=" + userId + ", username=" + username + ", password=" + password
-				+ ", company=" + company + ", createdBy=" + createdBy
-				+ ", updatedBy=" + updatedBy + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + ", isActive="
-				+ isActive + ", emailAddress=" + emailAddress + ", phoneNumber=" + phoneNumber + ", image="
-				+ Arrays.toString(image) + ", groupRoles=" + groupRoles + "]";
+		return "UserProfile{" +
+				"userId=" + userId +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", company='" + company + '\'' +
+				", createdBy='" + createdBy + '\'' +
+				", updatedBy='" + updatedBy + '\'' +
+				", createdOn='" + createdOn + '\'' +
+				", updatedOn='" + updatedOn + '\'' +
+				", isActive=" + isActive +
+				", emailAddress='" + emailAddress + '\'' +
+				", phoneNumber='" + phoneNumber + '\'' +
+				", image=" + Arrays.toString(image) +
+				", groupRoles=" + groupRoles +
+				'}';
 	}
 
 }

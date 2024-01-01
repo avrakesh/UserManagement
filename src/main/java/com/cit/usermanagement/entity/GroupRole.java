@@ -6,7 +6,7 @@ public class GroupRole {
 
     private String assignedGroupId;
     private String roleId;
-    private List<String> deniedAccessMethodNames;
+    private List <String> customizedPrivileges;
 
     public String getAssignedGroupId() {
         return assignedGroupId;
@@ -24,19 +24,12 @@ public class GroupRole {
         this.roleId = roleId;
     }
 
-    public List<String> getDeniedAccessMethodNames() {
-        return deniedAccessMethodNames;
+    public List<String> getCustomizedPrivileges() {
+        return customizedPrivileges;
     }
 
-    public void setDeniedAccessMethodNames(List<String> deniedAccessMethodNames) {
-        this.deniedAccessMethodNames = deniedAccessMethodNames;
+    public void setCustomizedPrivileges(List<String> customizedPrivileges) {
+        this.customizedPrivileges = customizedPrivileges;
     }
 
-    @Override
-    public String toString() {
-        return "GroupRole{" +
-                "assignedGroupId='" + assignedGroupId + '\'' +
-                ", roleId='" + roleId + '\'' +
-                '}';
-    }
 }
