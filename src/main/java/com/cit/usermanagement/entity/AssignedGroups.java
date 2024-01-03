@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.List;
 
 @Document(collection = "assignedGroups")
 public class AssignedGroups {
@@ -14,6 +15,10 @@ public class AssignedGroups {
 	private String groupId;
 	@Indexed(unique = true)
 	private String groupName;
+
+	private String groupAdminId;
+
+	private List<String> applications;
 	private Boolean isActive;
 
 	public String getGroupId() {
@@ -38,6 +43,22 @@ public class AssignedGroups {
 
 	public void setIsActive(Boolean active) {
 		isActive = active;
+	}
+
+	public String getGroupAdminId() {
+		return groupAdminId;
+	}
+
+	public void setGroupAdminId(String groupAdminId) {
+		this.groupAdminId = groupAdminId;
+	}
+
+	public List<String> getApplications() {
+		return applications;
+	}
+
+	public void setApplications(List<String> applications) {
+		this.applications = applications;
 	}
 
 	@Override

@@ -25,47 +25,18 @@ public class AssignedUserGroupService {
     @Autowired
     SequenceGeneratorService sequenceGeneratorService;
 
-//    public ResponseEntity<String> addAssignedUser(com.projects.CIT_Version1_0.view.AssignedUsers user) throws ApplicationException {
-//        com.projects.CIT_Version1_0.model.AssignedUsers adduserGroup = new com.projects.CIT_Version1_0.model.AssignedUsers();
-//        try {
-//            user.setUserId(String.valueOf(sequenceGeneratorService.generateSequence((AssignedUsers.SEQUENCE_NAME))));
-//            BeanUtils.copyProperties(user, adduserGroup);
-//            userDao.save(adduserGroup);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            sequenceGeneratorService.decrementOperation(AssignedUsers.SEQUENCE_NAME);
-//        }
-//        return new ResponseEntity<>("created an entry in group", HttpStatus.OK);
-//    }
-//
-//    public ResponseEntity<List<com.projects.CIT_Version1_0.view.AssignedUsers>> getAssignedUsers() throws ApplicationException {
-//        List<com.projects.CIT_Version1_0.view.AssignedUsers> viewList = new ArrayList<com.projects.CIT_Version1_0.view.AssignedUsers>();
-//        List<com.projects.CIT_Version1_0.model.AssignedUsers> list = userDao.findAll();
-//        for (com.projects.CIT_Version1_0.model.AssignedUsers model : list) {
-//            com.projects.CIT_Version1_0.view.AssignedUsers view = new com.projects.CIT_Version1_0.view.AssignedUsers();
-//            BeanUtils.copyProperties(model, view);
-//            viewList.add(view);
-//        }
-//        return new ResponseEntity<>(viewList, HttpStatus.OK);
-//    }
-
-//    public ResponseEntity<String> deleteAssignedUser(String username) {
-//
-//        Optional<AssignedUsers> assignedUsers = userDao.findByUsername(username);
-//        userDao.deleteById(assignedUsers.get().getUserId());
-//        return new ResponseEntity<>("User removed Successfully from assignedUser table", HttpStatus.GONE);
-//    }
-
     public ResponseEntity<String> addAssignedGroup(AssignedGroups group) throws ApplicationException {
-        com.cit.usermanagement.entity.AssignedGroups adduserGroup = new com.cit.usermanagement.entity.AssignedGroups();
+        com.cit.usermanagement.entity.AssignedGroups assignedGroup = new com.cit.usermanagement.entity.AssignedGroups();
 
         group.setGroupId(String.valueOf(sequenceGeneratorService.generateSequence((com.cit.usermanagement.entity.AssignedGroups.SEQUENCE_NAME))));
 
         try {
-            adduserGroup.setGroupId(group.getGroupId());
-            adduserGroup.setGroupName(group.getGroupName());
-            adduserGroup.setIsActive(group.getIsActive());
-            groupDao.save(adduserGroup);
+            assignedGroup.setGroupId(group.getGroupId());
+            assignedGroup.setGroupName(group.getGroupName());
+            assignedGroup.setIsActive(group.getIsActive());
+            assignedGroup.setGroupAdminId(group.getGroupAdminId());
+            assignedGroup.setApplications(group.getApplications());
+            groupDao.save(assignedGroup);
             return new ResponseEntity<>("created an entry in group", HttpStatus.OK);
 
         }catch (DuplicateKeyException dKE) {
@@ -135,9 +106,18 @@ public class AssignedUserGroupService {
 
             System.out.println(viewAssignedGroup.getIsActive());
 
-            assignedGroupFromDb.setGroupName(viewAssignedGroup.getGroupName());
-            assignedGroupFromDb.setIsActive(viewAssignedGroup.getIsActive());
-
+            if(viewAssignedGroup.getGroupName() != null) {
+                assignedGroupFromDb.setGroupName(viewAssignedGroup.getGroupName());
+            }
+            if(viewAssignedGroup.getApplications() != null) {
+                assignedGroupFromDb.setApplications(viewAssignedGroup.getApplications());
+            }
+            if(viewAssignedGroup.getGroupAdminId() != null) {
+                assignedGroupFromDb.setGroupAdminId(viewAssignedGroup.getGroupAdminId());
+            }
+            if(viewAssignedGroup.getIsActive() != null) {
+                assignedGroupFromDb.setIsActive(viewAssignedGroup.getIsActive());
+            }
             System.out.println(optionalAssignedGroupFromDb.get());
             System.out.println(assignedGroupFromDb);
             groupDao.save(assignedGroupFromDb);
