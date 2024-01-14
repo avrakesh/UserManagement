@@ -11,6 +11,7 @@
 	<groupId>com.cit.usermanagement</groupId>
 	<artifactId>rolemanagement</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>user-management</name>
 	<description>User management Service</description>
 	<properties>
